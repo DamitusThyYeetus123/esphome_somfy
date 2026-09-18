@@ -50,7 +50,7 @@ void SomfyCover::on_rts_frame_(const RtsDecodedFrame &frame) {
           !this->rx_sync_.active() && this->has_my_position_) {
         this->start_rx_sync_to(this->my_position_);
       } else {
-        this->stop_rx_sync();
+        this->stop_rx_sync_();
       }
       break;
 
@@ -190,14 +190,14 @@ void SomfyCover::program() { log_and_send_("PROG", RtsCommand::Prog);  }
 void SomfyCover::my() {
   #ifdef USE_SOMFY_COVER_RX
   if (this->rx_sync_.active())
-    this->stop_rx_sync();
+    this->stop_rx_sync_();
   #endif
   // Send stop command if the motor is currently moving
-  if (this->current_operation != Cover::COVER_OPERATION_IDLE) {
+  if (this->current_operation != cover::COVER_OPERATION_IDLE) {
     log_and_send_("STOP", RtsCommand::My);
   }
   // Send my command
-  this->set_timeout("cover-my-command", 500, [this]() {log_and_send_("STOP", RtsCommand::My);})
+  this->set_timeout("cover-my-command", 500, [this]() {log_and_send_("STOP", RtsCommand::My);});
   #ifdef USE_SOMFY_COVER_RX
   if (this->has_my_position_) {
     this->start_rx_sync_to(this->my_position_);
